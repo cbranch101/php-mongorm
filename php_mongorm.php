@@ -65,6 +65,11 @@
 			return $this;
 		}
 		
+		public function ensure_index($indexes, $options = array()) {
+			self::$collection->ensureIndex($indexes, $options);
+			return $this;
+		}
+		
 		public function sort($fieldsToSortBy) {
 			self::$cursor->sort($fieldsToSortBy);
 			return $this;

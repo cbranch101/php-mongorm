@@ -6,12 +6,24 @@
 	
 	
 	MongORM::connect('test');		
+	$tomData = array(
+		'name' => 'Tom',
+		'age' => 20,
+	);
 	
-	$data = MongORM::for_collection('users')
-		->select('age')
+	$tom = MongORM::for_collection('friends')
+		->ensure_index(array('name' => 1), array('unique' => true, 'dropDups' => true))
+		->create($tomData)
+		->save();
+
+	$tom2 = MongORM::for_collection('friends')
+		->ensure_index(array('name' => 1))
+		->create($tomData)
+		->save();
+	
+	$data = MongORM::for_collection('friends')
 		->find_many()
-		->sort(array('age' => -1))
-			->as_array();
+	->as_array();
 	echo json_encode($data);
 		
 		
