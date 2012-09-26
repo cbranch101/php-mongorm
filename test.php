@@ -7,24 +7,27 @@
 	
 	MongORM::connect('test');		
 	$tomData = array(
-		'name' => 'Tom',
-		'age' => 20,
+		'name' => 'Upton',
+		'age' => 170,
 	);
 	
 	$tom = MongORM::for_collection('friends')
-		->ensure_index(array('name' => 1), array('unique' => true, 'dropDups' => true))
+		
 		->create($tomData)
 		->save();
 
 	$tom2 = MongORM::for_collection('friends')
-		->ensure_index(array('name' => 1))
 		->create($tomData)
 		->save();
 	
 	$data = MongORM::for_collection('friends')
+		->ensure_index(array('age' => true), array('unique' => true, 'dropDups' => true))
 		->find_many()
 	->as_array();
+	
 	echo json_encode($data);
+	
+	
 		
 		
 	

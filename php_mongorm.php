@@ -66,6 +66,7 @@
 		}
 		
 		public function ensure_index($indexes, $options = array()) {
+			self::$collection->deleteIndexes();
 			self::$collection->ensureIndex($indexes, $options);
 			return $this;
 		}
