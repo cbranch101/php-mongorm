@@ -100,9 +100,29 @@ $query = array(
 );	
 
 $usersAged30 = MongORM::for_collection('users')
-	->find_one($query)
+	->find_many($query)
 	->as_array();
 ```
+
+Would result in
+
+```php
+$usersAged30 = array(
+	1000 => array(
+		'_id' => {
+			'$id' => 1000,
+		},
+		'name' => 'Fred',
+		'age' => 30,
+	),
+	1001 => array(
+		'_id' => {
+			'$id' => 1001,
+		},
+		'name' => 'John',
+		'age' => 30,
+	),
+);
 
 ## Update Documents
 
@@ -154,6 +174,18 @@ $allUsers = array(
 		'age' => 5,
 	),
 );
+```
+### Updating multiple attributes in a single call
+
+Pass the attributes you want to set as an array
+
+```php
+$attributesToUpdate = array(
+	'name' => 'George'
+	'age' => 100,
+);
+$allUsers->set($attributesToUpdate);
+$allUsers->update();
 ```
 
 ## Deleting Documents

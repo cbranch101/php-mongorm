@@ -5,15 +5,26 @@
 	require_once('php_mongorm.php');
 	
 	MongORM::connect('test2');
-
-
-	echo json_encode(iterator_to_array($data));
+		
+	
+	$allRecords = MongORM::for_collection('records')
+		->find_many();
+	$test = array(
+		'x' => 100,
+		'y' => 100,
+	);
+	$allRecords->set($test);
+	$allRecords->update();
+	
+	$data = MongORM::for_collection('records')
+		->find_many()
+		->as_array();
+	
+	echo json_encode($data);
+	
+		
 /* 	echo json_encode($testData); */
-	
-	
-	$query = array('name' => 'John');
-	MongORM::for_collection('users')
-		->delete_one($query);
+
 	
 				
 	
