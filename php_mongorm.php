@@ -31,7 +31,14 @@
 			self::$database = self::$connection->$databaseName;
 		}
 		
-		static function delete_many($condition) {
+		static function delete_one($condition = array()) {
+			$options = array(
+				'justOne' => true,
+			);
+			self::$collection->remove($condition, $options);
+		}
+		
+		static function delete_many($condition = array()) {
 			self::$collection->remove($condition);
 		}
 				
