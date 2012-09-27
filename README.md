@@ -70,7 +70,7 @@ $users = array(
 	),
 );
 	
-$users = MongORM::for_collection('users')
+MongORM::for_collection('users')
 	->create_many($users);
 
 $query = array(
@@ -93,8 +93,24 @@ $john = array(
 );
 ```
 
+## Update Documents
 
-### Create Multiple Documents At Once
+To update a document, find the document you want to update and change the desired value
+
+```php
+$query = array('name' => 'John');
+$john = MongORM::for_collection('users')
+	->find($query);
+
+$john->age = 100;
+$success = $john->update();
+```
+If the update was succesful, update returns true;
+
+### Updating Multiple Documents at once
+
+Updating multiple documents is no different than updating single documents
+
 ```php
 $users = array(
 	array(
@@ -107,7 +123,32 @@ $users = array(
 	),
 );
 	
-$users = MongORM::for_collection('users')
+MongORM::for_collection('users')
 	->create_many($users);
+	
+$allUsers = MongORM::find_many();
+
+$allUsers->age = 5;
+$allUsers->update();
 ```
+Would result in 
+```php 
+$allUsers = array(
+	array(
+		'name' => 'Fred',
+		'age' => 5,
+	),
+	array(
+		'name' => 'John',
+		'age' => 5,
+	),
+);
+```
+
+
+
+	
+
+
+
 
