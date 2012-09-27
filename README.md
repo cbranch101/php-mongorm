@@ -123,7 +123,7 @@ $usersAged30 = array(
 		'age' => 30,
 	),
 );
-
+```
 ## Update Documents
 
 To update a document, find the document you want to update and change the desired value
