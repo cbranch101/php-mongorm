@@ -1,4 +1,4 @@
-# FB Request Monkey
+# PHP MongORM
 
 an ORM manager for Mongo
 
