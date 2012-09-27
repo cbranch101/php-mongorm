@@ -21,32 +21,20 @@ MongORM::connect('test');
 MongORM::connect('test', 'host_name');
 ```
 
-## Usage
+## Create
 
 To make requests, build individual actions out of the query you want to make, the access token for that query, and the method.  The actions will be automatically batched.
 
 ```php
-$actions = array(
-	array(
-		'query' => 'me/friends',
-		'method' => 'GET',
-		'token' => 'ADLFKJSDFS97823987'
-		'params' => array(
-			'param1' => 'test',
-		),
-	),
-	array(
-		'query' => 'me',
-		'method' => 'GET',
-		'token' => 'ADLFKJSDFS97823987'
-		'params' => array(
-			'param1' => 'test',
-		),
-	),
+$user = array(
+	'name' => 'John',
+	'age' => 20,
 );
-
-$results = FB_Request_Monkey::sendMany($actions);
+	
+MongORM::for_collection('users')
+	->insert($user);
 ```
+$user has now been updated with an _id object
 
 ### Single Action
 ```php

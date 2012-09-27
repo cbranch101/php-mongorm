@@ -12,10 +12,12 @@
 	
 	
 		
+	$user = array(
+		'name' => 'John',
+		'age' => 20,
+	);
 		
-	$activeUsers = MongORM::for_collection('users')
-		->find('status' => 'active');
+	MongORM::for_collection('users')
+		->insert($user);
 	
-	$activeUsers->status = 'paused';
-	$activeUsers->update();
 	
