@@ -100,7 +100,7 @@ To update a document, find the document you want to update and change the desire
 ```php
 $query = array('name' => 'John');
 $john = MongORM::for_collection('users')
-	->find($query);
+	->find_many($query);
 
 $john->age = 100;
 $success = $john->update();
@@ -144,6 +144,26 @@ $allUsers = array(
 	),
 );
 ```
+
+## Deleting Documents
+
+	Deleting documents works very similarly to finding documents
+
+```php
+$query = array('name' => 'John');
+MongORM::for_collection('users')
+	->delete_one($query);
+```
+if successful, delete returns true;
+
+### Delelting Multiple Documents
+
+```php
+$query = array('age' => 20);
+MongORM::for_collection('users')
+	->delete_many($query);
+```
+
 
 
 

@@ -12,11 +12,8 @@
 	
 	
 	$query = array('name' => 'John');
-	$john = MongORM::for_collection('users')
-		->find($query);
-	
-	$john->age = 100;
-	$success = $john->update();
+	MongORM::for_collection('users')
+		->delete_one($query);
 	
 				
 	
