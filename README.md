@@ -124,6 +124,7 @@ $usersAged30 = array(
 	),
 );
 ```
+
 ## Update Documents
 
 To update a document, find the document you want to update and change the desired value
@@ -157,7 +158,8 @@ $users = array(
 MongORM::for_collection('users')
 	->create_many($users);
 	
-$allUsers = MongORM::find_many();
+$allUsers = MongORM::for_collection('users')
+	->find_many();
 
 $allUsers->age = 5;
 $allUsers->update();
