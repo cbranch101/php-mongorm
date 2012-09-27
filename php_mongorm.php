@@ -4,13 +4,15 @@
 		
 		
 		static $connection;
+		static $isSingle;
 		static $database;
 		static $self;
+		static $newData;
 		static $instance;
 		static $collection;
-		static $query;
+		static $query = array();
 		static $data;
-		static $fields;
+		static $fields = array();
 		static $cursor;
 		
 		/**
@@ -45,8 +47,17 @@
 			return iterator_to_array(self::$cursor);
 		}
 		
-		public function create($data = null) {
+		public function insert($data = null) {
 			self::$data = $data !== null ? $data : array();
+			return $this;
+		}
+		
+		public insert_many($data) {
+			
+		}
+		
+		public function update() {
+			self::$collection->update(self::$data, self::$newData);
 			return $this;
 		}
 		
@@ -77,25 +88,23 @@
 		}
 		
 		public function find_one($query = null) {
-			self::$cursor = self::sendQuery('findOne', $query);
+			self::combineQuery($query);
+			self::$data = self::$collection->findOne(self::$query, self::$fields);
 			return $this;
 		}
 		
 		public function find_many($query = null) {
-			self::$cursor = self::sendQuery('find', $query);
+			self::combineQuery($query);
+			self::$cursor = self::$collection->find(self::$query, self::$fields);
 			return $this;
 		}
-		
-		public function sendQuery($queryType, $query) {
-			if(self::$query) {
+				
+		public function combineQuery($query) {
+			if(count(self::$query) > 0 && $query) {
 				self::$query = array_merge($query, self::$query);
 			} else {
 				self::$query = $query;
 			}
-			$args = array();
-			$args[0] = self::$query === null ? array() : self::$query;
-			$args[1] = self::$fields === null ? array() : self::$fields;
-			return call_user_func_array(array(self::$collection, $queryType), $args);
 		}
 		
 		public function getId() {
@@ -109,9 +118,10 @@
 		
 		private function set($key, $value) {
 			if(!isset(self::$data[$key])) {
-				self::$data[$key] = array();
+				self::$data[$key] = $value;
+			} else {
+				self::$newData[$key] = $value;				
 			}
-			self::$data[$key] = $value;
 		} 
 		
 		static function confirmDatabase() {
@@ -120,9 +130,6 @@
 			}
 		}
 		
-        // --------------------- //
-        // --- MAGIC METHODS --- //
-        // --------------------- //
         public function __get($key) {
             return $this->get($key);
         }

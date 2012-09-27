@@ -4,30 +4,18 @@
 	ini_set( 'display_errors','1');
 	require_once('php_mongorm.php');
 	
-	
-	MongORM::connect('test');		
-	$tomData = array(
-		'name' => 'Upton',
-		'age' => 170,
-	);
-	
-	$tom = MongORM::for_collection('friends')
-		
-		->create($tomData)
-		->save();
+	MongORM::connect('test2');
 
-	$tom2 = MongORM::for_collection('friends')
-		->create($tomData)
-		->save();
-	
-	$data = MongORM::for_collection('friends')
-		->ensure_index(array('age' => true), array('unique' => true, 'dropDups' => true))
-		->find_many()
-	->as_array();
-	
-	echo json_encode($data);
+
+	echo json_encode(iterator_to_array($data));
+/* 	echo json_encode($testData); */
 	
 	
 		
 		
+	$activeUsers = MongORM::for_collection('users')
+		->find('status' => 'active');
+	
+	$activeUsers->status = 'paused';
+	$activeUsers->update();
 	
