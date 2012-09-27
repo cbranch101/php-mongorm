@@ -92,7 +92,7 @@ $john = array(
 	'age' => 30,
 );
 ```
-### Finding Multiple Documents
+### Reading Multiple Documents
 
 ```php
 $query = array(
