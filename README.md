@@ -147,7 +147,7 @@ $allUsers = array(
 
 ## Deleting Documents
 
-	Deleting documents works very similarly to finding documents
+Deleting documents works very similarly to finding documents
 
 ```php
 $query = array('name' => 'John');
