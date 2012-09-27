@@ -92,6 +92,17 @@ $john = array(
 	'age' => 30,
 );
 ```
+### Finding Multiple Documents
+
+```php
+$query = array(
+	'age' => 30,
+);	
+
+$usersAged30 = MongORM::for_collection('users')
+	->find_one($query)
+	->as_array();
+```
 
 ## Update Documents
 
@@ -156,7 +167,7 @@ MongORM::for_collection('users')
 ```
 if successful, delete returns true;
 
-### Delelting Multiple Documents
+### Deleting Multiple Documents
 
 ```php
 $query = array('age' => 20);
