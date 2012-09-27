@@ -21,9 +21,9 @@ MongORM::connect('test');
 MongORM::connect('test', 'host_name');
 ```
 
-## Create
+## Create Documents
 
-To make requests, build individual actions out of the query you want to make, the access token for that query, and the method.  The actions will be automatically batched.
+To create documents in MongORM, reference a collection and call create.  If a collection of the name specified doesn't yet exist, it will automatically be created.  In addition, the array passed into create will be updated with the _id object for the new document
 
 ```php
 $user = array(
@@ -32,94 +32,82 @@ $user = array(
 );
 	
 MongORM::for_collection('users')
-	->insert($user);
+	->create($user);
 ```
 $user has now been updated with an _id object
 
-### Single Action
+### Create Multiple Documents At Once
 ```php
-
-$action = array(
-	'query' => 'me/friends',
-	'token' => 'ADLFKJSDFS97823987'
-	'method' => 'GET',
-	'params' => array(
-		'param1' => 'test',
-	),
-);
-
-$results = FB_Request_Monkey::sendOne($action);
-```
-
-### FQL 
-
-```php
-$action = array(
-	'method' => 'GET',
-	'query' => 'fql',
-	'token' => 'Aasdlkjaslkjsdf',
-	'params' => array(
-		'q' => 'SELECT uid, name, pic_square FROM user WHERE uid = me()',
-	),
-);
-```
-
-### FQL MultiQuery
-
-This would return all of the names of all of the friends for the current users
-
-```php
-$action = array(
-	'method' => 'GET',
-	'query' => 'fql',
-	'token' => 'AAACZAvGW91SwBAAwx0d8DKTpkwkZCXP2yvF5UK2YNPYJVcDThI7HTFImTutxXrJQH2icFSLZBIkwOr4qD0SxUnMD01rFQJYgNZCfpgFh1wZDZD',
-	'params' => array(
-		'q' => array(
-			'query1' => 'SELECT uid2 FROM friend WHERE uid1 = me()',
-			'query2' => 'SELECT name FROM user WHERE uid IN (SELECT uid2 FROM #query1)',
-		),
-	),
-);
-```
-
-
-
-# Labelling / Grouping
-
-If you want the data that's returned to be grouped, add a label parameter to the action.
-
-```php
-$actions = array(
+$users = array(
 	array(
-		'query' => 'me/friends',
-		'method' => 'GET',
-		'token' => 'ADLFKJSDFS97823987'
-		'params' => array(
-			'param1' => 'test',
-		),
-		'label' => 'foo',
+		'name' => 'Fred',
+		'age' => 30,
 	),
 	array(
-		'query' => 'me',
-		'method' => 'GET',
-		'token' => 'ADLFKJSDFS97823987'
-		'params' => array(
-			'param1' => 'test',
-		),
-		'label' = 'bar',
+		'name' => 'John',
+		'age' => 20,
 	),
 );
-$results = FB_Request_Monkey::sendMany($actions);
+	
+$users = MongORM::for_collection('users')
+	->create_many($users);
 ```
-### Labelled Results
 
-```php		
-$labelledResults = array(
-	'foo' => array(
-		//data for this label
+## Read Documents
+
+To read a document, specify the collection and build a query array
+
+
+```php
+$users = array(
+	array(
+		'name' => 'Fred',
+		'age' => 30,
 	),
-	'bar' => array(
-		//data for this label
+	array(
+		'name' => 'John',
+		'age' => 20,
 	),
 );
+	
+$users = MongORM::for_collection('users')
+	->create_many($users);
+
+$query = array(
+	'name' => 'John',
+);	
+
+$john = MongORM::for_collection('users')
+	->find_one($query)
+	->as_array();
 ```
+The above query will result in
+
+```php
+$john = array(
+	'_id' => {
+		'$id' => '1asdfajiia',
+	},
+	'name' => 'Fred',
+	'age' => 30,
+);
+```
+
+
+### Create Multiple Documents At Once
+```php
+$users = array(
+	array(
+		'name' => 'Fred',
+		'age' => 30,
+	),
+	array(
+		'name' => 'John',
+		'age' => 20,
+	),
+);
+	
+$users = MongORM::for_collection('users')
+	->create_many($users);
+```
+
