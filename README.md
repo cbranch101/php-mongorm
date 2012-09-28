@@ -55,8 +55,7 @@ $users = MongORM::for_collection('users')
 
 ## Read Documents
 
-To read a document, specify the collection and build a query array
-
+To read a document, specify the collection and pass in a query array. If no query array is passed, returns all records in the collection
 
 ```php
 $users = array(
@@ -99,7 +98,7 @@ $query = array(
 	'age' => 30,
 );	
 
-$usersAged30 = MongORM::for_collection('users')
+$users_aged_30 = MongORM::for_collection('users')
 	->find_many($query)
 	->as_array();
 ```
@@ -107,7 +106,7 @@ $usersAged30 = MongORM::for_collection('users')
 Would result in
 
 ```php
-$usersAged30 = array(
+$users_aged_30 = array(
 	1000 => array(
 		'_id' => {
 			'$id' => 1000,
@@ -158,15 +157,15 @@ $users = array(
 MongORM::for_collection('users')
 	->create_many($users);
 	
-$allUsers = MongORM::for_collection('users')
+$all_users = MongORM::for_collection('users')
 	->find_many();
 
-$allUsers->age = 5;
-$allUsers->update();
+$all_users->age = 5;
+$all_users->update();
 ```
 Would result in 
 ```php 
-$allUsers = array(
+$all_users = array(
 	array(
 		'name' => 'Fred',
 		'age' => 5,
@@ -182,12 +181,12 @@ $allUsers = array(
 Pass the attributes you want to set as an array
 
 ```php
-$attributesToUpdate = array(
+$attributes_to_update = array(
 	'name' => 'George'
 	'age' => 100,
 );
-$allUsers->set($attributesToUpdate);
-$allUsers->update();
+$all_users->set($attributes_to_update);
+$all_users->update();
 ```
 
 ## Deleting Documents
@@ -209,6 +208,49 @@ MongORM::for_collection('users')
 	->delete_many($query);
 ```
 
+## Querying
+In addition to the standard array queries, there are some custom querying functions you can use
+
+### Select
+Only return specific fields, _id is always returned;
+
+```php
+$users = array(
+	array(
+		'name' => 'Steve',
+		'age' => 10,
+	),
+	array(
+		'name' => 'Tom',
+		'age' => 10,
+	),
+);
+
+MongORM::for_collection('users')
+	->create_many($users);
+
+$results = MongORM::for_collection('users')
+	->select('name')
+	->find_many()
+	->as_array();
+```
+Results would be
+```php
+array(
+	1 => array(
+		'_id' => {
+			'$id' => 1,
+		},
+		'name' => 'Fred',
+	),
+	2 => array(
+		'_id' => {
+			'$id' => 2,
+		},
+		'name' => 'John',
+	),
+);
+```
 
 
 

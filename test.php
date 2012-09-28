@@ -4,38 +4,24 @@
 	ini_set( 'display_errors','1');
 	require_once('php_mongorm.php');
 	
-	MongORM::connect('test2');		
 	
-	MongORM::for_collection('records')
-		->delete_many();
+	MongORM::connect('test2');
 	
-	$records = array(
-		array(
-			'name' => 'Steve',
-			'age' => 10,
-		),
-		array(
-			'name' => 'Tom',
-			'age' => 10,
-		),
-		array(
-			'name' => 'George',
-			'age' => 10,
-		),
-	);
+/*
+	$user = MongORM::for_collection('users')
+		->find_one();
+		
+	$user->name = 'Clay';
 	
-	MongORM::for_collection('records')
-		->create_many($records);
-
-	MongORM::for_collection('records')
-		->delete_one(array('name' => 'Steve'));
+	$user->update();
+*/
 	
-	$data = MongORM::for_collection('records')
+	$results = MongORM::for_collection('users')
 		->find_many()
 		->as_array();
 	
-	echo json_encode($data);
-	
+	echo json_encode($results);
+		
 		
 /* 	echo json_encode($testData); */
 
