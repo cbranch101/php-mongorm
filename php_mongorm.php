@@ -25,7 +25,7 @@
 		static $database;
 		
 		/**
-		 * newData
+		 * new_data
 		 * 
 		 * (default value: array())
 		 * When updating documents, new keys and values that are being
@@ -114,6 +114,7 @@
 		 */
 		static $cursor_functions = array(
 			'sort',
+			'limit',
 		); 
 		
 		/**
@@ -183,9 +184,18 @@
 		 * @return self
 		 */
 		static function for_collection($collection_name) {
+			self::reset_variables();
 			self::confirm_database();
 			self::$collection = self::$database->$collection_name;
 			return new self;
+		}
+		
+		static function reset_variables() {
+			self::$documents = array();
+			self::$new_data = array();
+			self::$query = array();
+			self::$fields = array();
+			self::$cursor = null;
 		}
 		
 		/**
@@ -264,7 +274,7 @@
 					self::$collection->update($update_condition, self::get_new_object());
 				}
 			}
-			self::$newData = array();
+			self::$new_data = array();
 			return $this;
 		}
 		
@@ -290,7 +300,7 @@
 		 * @return array
 		 */
 		public function get_new_object() {
-			return array('$set' => self::$newData);
+			return array('$set' => self::$new_data);
 		}
 				
 		/**
@@ -368,8 +378,8 @@
 		 * @return void
 		 */
 		public function set($contents_to_set) {
-			foreach($contentsToSet as $keyToSet => $valueToSet) {
-				self::set_in_documents($keyToSet, $valueToSet);
+			foreach($contents_to_set as $key_to_set => $value_to_set) {
+				self::set_in_documents($key_to_set, $value_to_set);
 			}
 		}
 		
@@ -534,7 +544,7 @@
 	       
 	       	// if the method being called is a cursor function
 	       	// call it on a cursor
-	        if(in_array($method, self::$cursorFunctions)) {
+	        if(in_array($method, self::$cursor_functions)) {
 		    	return self::cursor_function($method, $args);
 	        } else {
 		        throw new Exception("Method $method not found");

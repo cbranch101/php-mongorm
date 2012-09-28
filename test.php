@@ -5,7 +5,7 @@
 	require_once('php_mongorm.php');
 	
 	
-	MongORM::connect('test2');
+	MongORM::connect('test');
 	
 /*
 	$user = MongORM::for_collection('users')
@@ -15,12 +15,14 @@
 	
 	$user->update();
 */
+		
+	MongORM::for_collection('final_test')
+		->delete_many(array('x' => 'store'));
 	
-	$results = MongORM::for_collection('users')
+	$data = MongORM::for_collection('final_test')
 		->find_many()
-		->as_array();
-	
-	echo json_encode($results);
+		->as_array();	
+	echo json_encode($data);
 		
 		
 /* 	echo json_encode($testData); */
