@@ -5,23 +5,13 @@
 	require_once('php_mongorm.php');
 	
 	
-	MongORM::connect('test');
+	MongORM::connect('aisle5Test');
 	
-/*
-	$user = MongORM::for_collection('users')
-		->find_one();
-		
-	$user->name = 'Clay';
+	$data = MongORM::for_collection('users')
+		->select('name')
+		->find_by_id(678234993)
+	->as_array();
 	
-	$user->update();
-*/
-		
-	MongORM::for_collection('final_test')
-		->delete_many(array('x' => 'store'));
-	
-	$data = MongORM::for_collection('final_test')
-		->find_many()
-		->as_array();	
 	echo json_encode($data);
 		
 		

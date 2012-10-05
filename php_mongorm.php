@@ -115,6 +115,11 @@
 		static $cursor_functions = array(
 			'sort',
 			'limit',
+		);
+		
+		static $query_functions = array(
+			'where',
+			'where_js', 
 		); 
 		
 		/**
@@ -354,6 +359,15 @@
 			return $this;
 		}
 		
+		public function query_function($function_name, $args) {
+			call_user_func_array(array($this, $function_name), $args);
+			return $this;
+		}
+		
+		static function query_where($field, $value) {
+			self::$query[$field] = $value;
+		}
+		
 		/**
 		 * set_documents_from_cursor function.
 		 * 
@@ -427,15 +441,27 @@
 		 * @return object
 		 */
 		public function find_many($query = null) {
-			
 			// combine the input query with the existing query
 			self::combine_query($query);
-			
 			// set the cursor from the collection
 			self::$cursor = self::$collection->find(self::$query, self::$fields);
 			return $this;
 		}
-				
+		
+		/**
+		 * find_by_id function.
+		 * 
+		 * Find a single document by id
+		 * 
+		 * @access public
+		 * @param mixed $id
+		 * @return void
+		 */
+		public function find_by_id($id) {
+			self::find_many(array('_id' => $id));
+			return $this;
+		}
+						
 		/**
 		 * combine_query function.
 		 * 
@@ -447,8 +473,12 @@
 		 * @return void
 		 */
 		public function combine_query($query) {
-			if($query) {
-				self::$query = array_merge($query, self::$query);
+			if($query != null) {
+				if(count(self::$query) > 0) {
+					self::$query = array_merge(self::$query, $query);
+				} else {
+					self::$query = $query;
+				}
 			}
 		}
 		
@@ -541,14 +571,18 @@
         }
         
         public function __call($method, $args) {
-	       
+	       $methodFound = false;
 	       	// if the method being called is a cursor function
 	       	// call it on a cursor
 	        if(in_array($method, self::$cursor_functions)) {
 		    	return self::cursor_function($method, $args);
-	        } else {
-		        throw new Exception("Method $method not found");
-	        }        
+	        }
+	        if(in_array($method, self::$query_functions)) {
+		    	$fullMethod = 'query_' . $method;
+		    	return self::query_function($fullMethod, $args);	    
+	        }
+	        
+	        throw new Exception("Method $method not found");        
 	    }
 	
 	}
