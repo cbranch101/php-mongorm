@@ -343,6 +343,18 @@
 			self::$collection->ensureIndex($indexes, $options);
 			return $this;
 		}
+		
+		/**
+		 * delete_indexes function.
+		 * 
+		 * Removes any existing ensure_indexes
+		 * 
+		 * @access public
+		 * @return void
+		 */
+		public function delete_indexes() {
+			self::$collection->deleteIndexes();
+		} 
 				
 		/**
 		 * cursor_function function.
@@ -556,13 +568,15 @@
 		 * @return void
 		 */
 		private function set_in_documents($key, $value) {
-			if(count(self::$documents) == 0) {
-				self::set_documents_from_cursor();
-			}
-			foreach(self::$documents as $document_key => $document) {
-				$document[$key] = $value;
-				self::$documents[$document_key] = $document;
-				self::$new_data[$key] = $value;
+			if($key != '_id') {
+				if(count(self::$documents) == 0) {
+					self::set_documents_from_cursor();
+				}
+				foreach(self::$documents as $document_key => $document) {
+					$document[$key] = $value;
+					self::$documents[$document_key] = $document;
+					self::$new_data[$key] = $value;
+				}
 			}
 		} 
 		

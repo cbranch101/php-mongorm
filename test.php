@@ -8,16 +8,29 @@
 	MongORM::connect('aisle5Test');
 	
 	$test = array(
-		'_id' => 1005,
+		'_id' => 1007,
+		'id' => 1007,
 		'name' => 'Frank',
-		'other' => 'stuff',
-	);
-	
-	MongORM::for_collection('users')
-		->create_or_update_one($test);
+		'willy' => 'nilly',
+		'other' => 'monkey',
+		'stuff' => 'mother',
+		'skittles' => 'delicious',
+	);		
 		
+	$user = MongORM::for_collection('users')
+		->find_by_id($test['id']);
+		
+	if($user->has_contents()) {
+		$user->set($test);
+		$user->update();
+	} else {
+		$test['_id'] = $test['id'];
+		MongORM::for_collection('users')
+			->create_one($test);
+	}
+	
 	$data = MongORM::for_collection('users')
-		->find_one(1005)
+		->find_by_id(1007)
 	->as_array();
 	
 	echo json_encode($data);
