@@ -422,7 +422,7 @@
 			return self::find_by_id($id)
 				->has_contents();
 		}
-		
+				
 		/**
 		 * as_cursor function.
 		 * 

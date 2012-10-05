@@ -7,8 +7,18 @@
 	// test id 1223263
 	MongORM::connect('aisle5Test');
 	
+	$test = array(
+		'_id' => 1005,
+		'name' => 'Frank',
+		'other' => 'stuff',
+	);
+	
+	MongORM::for_collection('users')
+		->create_or_update_one($test);
+		
 	$data = MongORM::for_collection('users')
-		->id_exists(1223263);
+		->find_one(1005)
+	->as_array();
 	
 	echo json_encode($data);
 		
