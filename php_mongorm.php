@@ -397,8 +397,30 @@
 			}
 		}
 		
+		/**
+		 * has_contents function.
+		 * 
+		 * Check if the results of a query has any contents
+		 * 
+		 * @access public
+		 * @return void
+		 */
 		public function has_contents() {
 			return self::$cursor->hasNext();
+		}
+		
+		/**
+		 * id_exists function.
+		 * 
+		 * Checks if an ID exists in the collection
+		 * 
+		 * @access public
+		 * @param mixed $id
+		 * @return boolean
+		 */
+		public function id_exists($id) {
+			return self::find_by_id($id)
+				->has_contents();
 		}
 		
 		/**
