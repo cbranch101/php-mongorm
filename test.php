@@ -9,8 +9,9 @@
 	
 	$data = MongORM::for_collection('users')
 		->select('name')
-		->find_by_id(678234993)
-	->as_array();
+		->find_by_id(987239487)
+	->has_contents();
+	
 	
 	echo json_encode($data);
 		

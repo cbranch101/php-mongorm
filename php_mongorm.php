@@ -113,8 +113,8 @@
 		 * @static
 		 */
 		static $cursor_functions = array(
-			'sort',
-			'limit',
+			'sort' => 'sort',
+			'limit' => 'limit',
 		);
 		
 		static $query_functions = array(
@@ -397,6 +397,10 @@
 			}
 		}
 		
+		public function has_contents() {
+			return self::$cursor->hasNext();
+		}
+		
 		/**
 		 * as_cursor function.
 		 * 
@@ -461,7 +465,7 @@
 			self::find_many(array('_id' => $id));
 			return $this;
 		}
-						
+								
 		/**
 		 * combine_query function.
 		 * 
@@ -574,8 +578,8 @@
 	       $methodFound = false;
 	       	// if the method being called is a cursor function
 	       	// call it on a cursor
-	        if(in_array($method, self::$cursor_functions)) {
-		    	return self::cursor_function($method, $args);
+	        if(isset(self::$cursor_functions[$method])) {
+		    	return self::cursor_function(self::$cursor_functions[$method], $args);
 	        }
 	        if(in_array($method, self::$query_functions)) {
 		    	$fullMethod = 'query_' . $method;
