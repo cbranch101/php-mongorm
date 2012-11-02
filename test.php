@@ -22,15 +22,12 @@
 	);
 		
 	MongORM::for_collection('users')
-		->create_one($testData[1]);
+		->create_many($testData);
 		
 	$data = MongORM::for_collection('users')
-		->find_many()
-		->as_array();
+		->find_by_id(1);
 		
-		
-		
-	echo json_encode($data);
+	echo json_encode($data->_id);
 
 	
 				

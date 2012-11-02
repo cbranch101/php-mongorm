@@ -112,6 +112,9 @@
 		 * @access public
 		 * @static
 		 */
+		 
+		 static $isCursorConverted = false;
+		 
 		static $cursor_functions = array(
 			'sort' => 'sort',
 			'limit' => 'limit',
@@ -390,7 +393,9 @@
 		 * @return array
 		 */
 		public function set_documents_from_cursor() {
-			self::$documents = iterator_to_array(self::$cursor);
+			if(!self::$isCursorConverted) {
+				self::$documents = iterator_to_array(self::$cursor);
+			}
 		}
 		
 		/**
@@ -461,15 +466,9 @@
 		 * @return object
 		 */
 		public function find_one($query = null) {
-			
-			// combine the input query with the existing query
-			self::combine_query($query);
-			
-			// because this is a find one, it returns a document immediately
-			$document = self::$collection->findOne(self::$query, self::$fields);
-			// add the document inside of an array so it can processed later on
-			array_push(self::$documents, $document);
-			return $this;
+			return self::find_many($query)
+				->limit(1);
+				
 		}
 		
 		/**
@@ -482,11 +481,15 @@
 		 * @return object
 		 */
 		public function find_many($query = null) {
+			
 			// combine the input query with the existing query
 			self::combine_query($query);
+			
 			// set the cursor from the collection
 			self::$cursor = self::$collection->find(self::$query, self::$fields);
+			
 			return $this;
+			
 		}
 		
 		/**
@@ -544,19 +547,18 @@
 		 * @return mixed
 		 */
 		private function get($key) {
-			if(count(self::$documents) < 2) {
-				if(count(self::$documents) == 0) {
-					return null;
-				} else {
-					return self::$documents[0][$key];
-				}
+			self::set_documents_from_cursor();
+			$values = array();
+			foreach(self::$documents as $document) {
+				array_push($values, $document[$key]);
+			}
+			
+			if(count(self::$documents) == 1) {
+				return $values[0];
 			} else {
-				$values = array();
-				foreach($documents as $document) {
-					array_push($values, $document[$key]);
-				}
-				return $values;
-			}			
+				return $values;	
+			}
+					
 		}
 		
 		/**
