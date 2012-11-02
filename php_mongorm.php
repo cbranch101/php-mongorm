@@ -395,6 +395,7 @@
 		public function set_documents_from_cursor() {
 			if(!self::$isCursorConverted) {
 				self::$documents = iterator_to_array(self::$cursor);
+				self::$isCursorConverted = true;
 			}
 		}
 		
