@@ -6,37 +6,31 @@
 	
 	// test id 1223263
 	MongORM::connect('aisle5Test');
+	MongORM::for_collection('users')
+		->delete_many();
 	
-	$test = array(
-		'_id' => 1007,
-		'id' => 1007,
-		'name' => 'Frank',
-		'willy' => 'nilly',
-		'other' => 'monkey',
-		'stuff' => 'mother',
-		'skittles' => 'delicious',
-	);		
 		
-	$user = MongORM::for_collection('users')
-		->find_by_id($test['id']);
+	$testData = array(
+		array(
+			'_id' => 1,
+			'store_id' => 1,
+		),
+		array(
+			'_id' => 2,
+			'store_id' => 2,
+		),
+	);
 		
-	if($user->has_contents()) {
-		$user->set($test);
-		$user->update();
-	} else {
-		$test['_id'] = $test['id'];
-		MongORM::for_collection('users')
-			->create_one($test);
-	}
-	
+	MongORM::for_collection('users')
+		->create_one($testData[1]);
+		
 	$data = MongORM::for_collection('users')
-		->find_by_id(1007)
-	->as_array();
-	
+		->find_many()
+		->as_array();
+		
+		
+		
 	echo json_encode($data);
-		
-		
-/* 	echo json_encode($testData); */
 
 	
 				

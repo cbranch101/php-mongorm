@@ -421,6 +421,10 @@
 			return self::$cursor->hasNext();
 		}
 		
+		public function count() {
+			return self::$cursor->count();
+		}
+		
 		/**
 		 * id_exists function.
 		 * 
@@ -463,7 +467,6 @@
 			
 			// because this is a find one, it returns a document immediately
 			$document = self::$collection->findOne(self::$query, self::$fields);
-			
 			// add the document inside of an array so it can processed later on
 			array_push(self::$documents, $document);
 			return $this;
@@ -496,7 +499,7 @@
 		 * @return void
 		 */
 		public function find_by_id($id) {
-			self::find_many(array('_id' => $id));
+			self::find_one(array('_id' => $id));
 			return $this;
 		}
 								
@@ -545,7 +548,7 @@
 				if(count(self::$documents) == 0) {
 					return null;
 				} else {
-					return $documents[0][$key];
+					return self::$documents[0][$key];
 				}
 			} else {
 				$values = array();
@@ -607,7 +610,7 @@
         }
 
         public function __isset($key) {
-            return isset(self::$data[$key]);
+            return isset(self::$documents[0][$key]);
         }
         
         public function __call($method, $args) {
