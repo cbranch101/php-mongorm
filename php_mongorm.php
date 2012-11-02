@@ -612,6 +612,7 @@
         
         public function __call($method, $args) {
 	       $methodFound = false;
+	       	
 	       	// if the method being called is a cursor function
 	       	// call it on a cursor
 	        if(isset(self::$cursor_functions[$method])) {
