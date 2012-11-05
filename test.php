@@ -27,7 +27,10 @@
 	$data = MongORM::for_collection('users')
 		->find_by_id(1);
 		
-	echo json_encode($data->_id);
+	$data = MongORM::for_collection('users')
+		->find_by_id(1);
+		
+	echo json_encode($data->as_array());
 
 	
 				

@@ -204,6 +204,7 @@
 			self::$query = array();
 			self::$fields = array();
 			self::$cursor = null;
+			self::$isCursorConverted = false;
 		}
 		
 		/**
