@@ -425,11 +425,19 @@
 		 * @return void
 		 */
 		public function has_contents() {
-			return self::$cursor->hasNext();
+			if(self::$isCursorConverted) {
+				return count(self::$documents) > 0; 
+			} else {
+				return self::$cursor->hasNext();
+			}
 		}
 		
 		public function count() {
-			return self::$cursor->count();
+			if(self::$isCursorConverted) {
+				return count(self::$documents);
+			} else {
+				return self::$cursor->count();
+			}
 		}
 		
 		/**
@@ -576,9 +584,7 @@
 		 */
 		private function set_in_documents($key, $value) {
 			if($key != '_id') {
-				if(count(self::$documents) == 0) {
-					self::set_documents_from_cursor();
-				}
+				self::set_documents_from_cursor();
 				foreach(self::$documents as $document_key => $document) {
 					$document[$key] = $value;
 					self::$documents[$document_key] = $document;
