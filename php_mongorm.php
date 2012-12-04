@@ -1,5 +1,9 @@
 <?php
 
+	// set the zend compatibility mode so we can definitely clone objects
+	
+	ini_set('zend.ze1_compatibility_mode', 0);
+
 	class MongORM {
 		
 		/**
@@ -143,6 +147,7 @@
 			// make sure that we have a host before passing it in
 			self::$connection = $host ? new Mongo($host) : new Mongo();	
 			self::$database = self::$connection->$database_name;
+			
 		}
 		
 		/**
@@ -497,10 +502,12 @@
 			
 			// set the cursor from the collection
 			self::$cursor = self::$collection->find(self::$query, self::$fields);
-			
+						
 			return $this;
 			
 		}
+		
+		
 		
 		/**
 		 * find_by_id function.
@@ -567,8 +574,7 @@
 				return $values[0];
 			} else {
 				return $values;	
-			}
-					
+			}	
 		}
 		
 		/**
