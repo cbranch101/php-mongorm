@@ -122,6 +122,7 @@
 		static $cursor_functions = array(
 			'sort' => 'sort',
 			'limit' => 'limit',
+			'skip' => 'skip',
 		);
 		
 		static $query_functions = array(
@@ -230,19 +231,8 @@
 				// convert it to an array
 				self::set_documents_from_cursor();
 			}
-			
-			if(self::has_multiple_documents()) {
-				return self::$documents;
-			} else {
 				
-				// if there aren't any documents
-				// return an empty array
-				if(count(self::$documents) > 0) {
-					return self::$documents[0];
-				} else {
-					return array();
-				}
-			}
+				return self::$documents;
 		}
 		
 		/**
@@ -543,15 +533,6 @@
 			}
 		}
 		
-		/**
-		 * has_multiple_documents function.
-		 * 
-		 * @access private
-		 * @return void
-		 */
-		private function has_multiple_documents() {
-			return count(self::$documents > 1);
-		}
 		
 		/**
 		 * get function.
@@ -611,7 +592,7 @@
 		 */
 		static function confirm_database() {
 			if(!self::$database) {
-				Throw new Exception("Please call MongORM::connect() before proceeding");
+				throw new Exception("Please call MongORM::connect() before proceeding");
 			}
 		}
 		
@@ -623,10 +604,6 @@
 
         public function __set($key, $value) {
             $this->set_in_documents($key, $value);
-        }
-
-        public function __isset($key) {
-            return isset(self::$documents[0][$key]);
         }
         
         public function __call($method, $args) {
