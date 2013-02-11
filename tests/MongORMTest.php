@@ -14,7 +14,6 @@
 		
 		function __construct() {
 			self::$functionalBuilderConfig = self::getFunctionalBuilderConfig();
-			
 		}
 		
 		protected function tearDown() {
@@ -312,6 +311,53 @@
 								'_id' => 3,
 								'test' => 2,
 							),
+						);
+						return $assertInput;
+					},
+				),
+			);
+			$test = self::buildTest($test);			
+		}
+		
+		public function testAggregate() {
+			$test = array(
+				'entry_point' => 'collection',
+				'configuration' => 'three_records',
+				'alterations' => array(
+					'extra_params' => function($extraParams) {
+						$extraParams['build_output'] = function($collection) {
+							
+							$aggregationDetails = array(
+								array(
+									'$group' => array(
+										"_id" => array("test" => '$test'),
+									),
+								),
+							);
+							
+							$results = $collection
+								->aggregate($aggregationDetails);
+							return $results;
+							
+							
+						};
+						return $extraParams;
+					},
+					'assert_input' => function($assertInput) {
+						$assertInput['expected'] = array(
+							'result' => array(
+								array(
+									'_id' => array(
+										'test' => 2,
+									),
+								),
+								array(
+									'_id' => array(
+										'test' => 1,
+									),
+								),
+							),
+							'ok' => 1,
 						);
 						return $assertInput;
 					},

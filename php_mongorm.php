@@ -185,6 +185,10 @@
 		static function delete_many($condition = array()) {
 			return self::$collection->remove($condition);
 		}
+		
+		static function aggregate($aggregationDetails) {
+			return self::$collection->aggregate($aggregationDetails);
+		}
 				
 		/**
 		 * for_collection function.
