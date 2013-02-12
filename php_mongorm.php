@@ -187,7 +187,8 @@
 		}
 		
 		static function aggregate($aggregationDetails) {
-			return self::$collection->aggregate($aggregationDetails);
+			$results =  self::$collection->aggregate($aggregationDetails);
+			return $results;
 		}
 				
 		/**

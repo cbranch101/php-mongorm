@@ -21,8 +21,6 @@
 				->delete_many();
 		}
 		
-		
-		
 		public function getFunctionalBuilderConfig() {
 			return array(
 				'configuration_map' => self::getConfigurationMap(),
@@ -58,6 +56,7 @@
 			return array(
 				'all' => self::getAllEntryPoint(),
 				'collection' => self::getCollectionEntryPoint(),
+				'aggregate' => self::getAggregateEntryPoint(),
 			);
 			
 		}
@@ -77,7 +76,6 @@
 							'actual' => $output,
 						)
 					);
-
 				},
 				'input' => array(),
 				'extra_params' => array(),
@@ -110,6 +108,25 @@
 			
 		}
 		
+		public function getAggregateEntryPoint() {
+			
+			return array(
+				'input' => array(),
+				'get_output' => function($input, $extraParams) {
+					
+					$operators = $input['operators'];
+					$recordsToCreate = $extraParams['records_to_create'];
+					if($inputData) {
+						MongORM::for_collection('test_records')
+							->create_many($recordsToCreate);
+					}
+					$collection = MongORM::for_collection('test_records');
+					return $collection->aggregate($operators);
+				},
+			);
+		
+		}
+		
 		public function addFindQueriesToCollection($collection, $extraParams) {
 			
 			$findMap = array(
@@ -138,6 +155,7 @@
 				'empty_records' => self::getEmptyRecordsConfiguration(),
 				'three_records' => self::getThreeRecordsConfiguration(),
 				'two_records_extra_info' => self::getTwoRecordsExtraInfoConfiguration(),
+				'three_posts' => self::getThreePosts(),
 			);			
 		}
 		
@@ -203,6 +221,52 @@
 			);	
 		}
 		
+		public function getThreePostConfiguration() {
+			return array(
+				'input' => array(
+					'operators' => array(
+						'$project' => array(
+							'impressions' => 1,
+							'likes' => 1,
+						),		
+					),
+				),
+				'extra_params' => array(
+					'records_to_create' => array(
+						array(
+							'_id' => 1,
+							'impressions' => 100,
+							'likes' => 10,
+							'shares' => 10,
+							'comments' => 10,
+							'created_on' => "2013-02-03T05:09:10+0000",
+						),
+						array(
+							'_id' => 2,
+							'impressions' => 100,
+							'likes' => 10,
+							'shares' => 10,
+							'comments' => 10,
+							'created_on' => "2013-02-03T05:09:10+0000",
+						),
+						array(
+							'_id' => 3,
+							'impressions' => 100,
+							'likes' => 10,
+							'shares' => 10,
+							'comments' => 10,
+							'created_on' => "2013-02-03T05:09:10+0000",
+						),
+					),
+				),
+				'assert_input' => array(
+					'expected' => array(
+						
+					),
+				),
+
+			);
+		}
 		
 		public function getEmptyRecordsConfiguration() {
 			return array(
