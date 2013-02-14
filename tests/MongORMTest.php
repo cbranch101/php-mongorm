@@ -5,6 +5,7 @@
 	require_once('/Users/cbranch101/Sites/clay/movement_strategy/php-underscore/underscore.php');
 	require_once('/Users/cbranch101/Sites/clay/movement_strategy/php_mongorm/php_mongorm.php');
 	require_once('/Users/cbranch101/Sites/clay/movement_strategy/functional_test_builder/functional_test_builder.php');
+	require_once('/Users/cbranch101/Sites/clay/movement_strategy/knicks_scraping/includes/game_feed_scraper.php');
 
 	class MongORMTest extends PHPUnit_Framework_TestCase {
 		
@@ -12,13 +13,18 @@
 				
 		static $verifyExpectedActual = true;
 		
+		static $collectionsToPopulate = array(
+			'test_records',
+			'posts',
+			'games',
+		);
+		
 		function __construct() {
 			self::$functionalBuilderConfig = self::getFunctionalBuilderConfig();
 		}
 		
 		protected function tearDown() {
-			MongORM::for_collection('test_records')
-				->delete_many();
+			self::resetCollections();
 		}
 		
 		public function getFunctionalBuilderConfig() {
@@ -49,6 +55,41 @@
 		
 		public function buildTest($test) {
 			Test_Builder::buildTest($test, self::$functionalBuilderConfig);
+		}
+		
+		public function populateCollections($inputData) {
+			self::resetCollections();
+			foreach(self::$collectionsToPopulate as $collectionToPopulate) {
+				
+				if(isset($inputData[$collectionToPopulate])) {
+					$recordsToCreate = $inputData[$collectionToPopulate];
+					MongORM::for_collection($collectionToPopulate)
+						->create_many($recordsToCreate);
+				} 
+			}
+		}
+		
+		public function getAllFromCollections() {
+			return __::chain(self::$collectionsToPopulate)
+			
+				->map(function($collectionToPopulate){
+					$data = MongORM::for_collection($collectionToPopulate)
+						->find_many()
+						->as_array();
+						
+					return array(
+						$collectionToPopulate => $data,
+					);
+				})
+				->flatten(true)
+			->value();
+		}
+		
+		public function resetCollections() {
+			foreach(self::$collectionsToPopulate as $collectionToPopulate) {
+				MongORM::for_collection($collectionToPopulate)
+					->delete_many();
+			} 
 		}
 		
 		public function getEntryPointMap() {
@@ -113,20 +154,19 @@
 			return array(
 				'input' => array(),
 				'get_output' => function($input, $extraParams) {
-					
 					$operators = $input['operators'];
-					$recordsToCreate = $extraParams['records_to_create'];
-					if($inputData) {
-						MongORM::for_collection('test_records')
-							->create_many($recordsToCreate);
-					}
-					$collection = MongORM::for_collection('test_records');
-					return $collection->aggregate($operators);
+					$collectionsToPopulate = $extraParams['collections_to_populate'];
+					MongORMTest::populateCollections($collectionsToPopulate);
+					$games = MongORM::for_collection('games')
+						->find_many()
+						->as_array();
+					$postsAroundGames = Game_Feed_Scraper::getPostsAroundGames($games);
+					return $postsAroundGames;
 				},
 			);
 		
 		}
-		
+				
 		public function addFindQueriesToCollection($collection, $extraParams) {
 			
 			$findMap = array(
@@ -155,7 +195,7 @@
 				'empty_records' => self::getEmptyRecordsConfiguration(),
 				'three_records' => self::getThreeRecordsConfiguration(),
 				'two_records_extra_info' => self::getTwoRecordsExtraInfoConfiguration(),
-				'three_posts' => self::getThreePosts(),
+				'three_posts' => self::getThreePostConfiguration(),
 			);			
 		}
 		
@@ -222,40 +262,71 @@
 		}
 		
 		public function getThreePostConfiguration() {
+			$time1 = "2012-10-15T13:00:00+0000";
+			$time2 = "2012-10-15T22:09:10+0000";
+			$time3 = "2012-10-16T01:50:00+0000";
 			return array(
 				'input' => array(
 					'operators' => array(
-						'$project' => array(
-							'impressions' => 1,
-							'likes' => 1,
-						),		
+						array(
+							'$project' => array(
+								'start_time' => 1,
+								'start_date' => 1,
+							),
+						),
 					),
 				),
 				'extra_params' => array(
-					'records_to_create' => array(
-						array(
-							'_id' => 1,
-							'impressions' => 100,
-							'likes' => 10,
-							'shares' => 10,
-							'comments' => 10,
-							'created_on' => "2013-02-03T05:09:10+0000",
+					
+					'collections_to_populate' => array(
+						'posts' => array(
+							array(
+								'_id' => 1,
+								'impressions' => 100,
+								'created_time' => $time1,
+								'likes' => 10,
+								'shares' => 10,
+								'comments' => 20,
+								'mentioned_players' => array(
+									
+								),
+								'mongo_date' => new MongoDate(strtotime($time1)),
+							),
+							array(
+								'_id' => 2,
+								'post_type' => 'non_game',
+								'created_time' => $time2,
+								'impressions' => 100,
+								'likes' => 10,
+								'shares' => 10,
+								'comments' => 20,
+								'mentioned_players' => array(
+									'Carmelo Anthony',
+									'Iman Shumpert',
+								),
+								'mongo_date' => new MongoDate(strtotime($time2)),
+							),
+							array(
+								'_id' => 3,
+								'post_type' => 'non_game',
+								'impressions' => 100,
+								'created_time' => $time3,
+								'likes' => 10,
+								'shares' => 10,
+								'comments' => 60,
+								'mentioned_players' => array(
+									'Carmelo Anthony',
+									'JR Smith',
+								),
+								'mongo_date' => new MongoDate(strtotime($time3)),
+							),
 						),
-						array(
-							'_id' => 2,
-							'impressions' => 100,
-							'likes' => 10,
-							'shares' => 10,
-							'comments' => 10,
-							'created_on' => "2013-02-03T05:09:10+0000",
-						),
-						array(
-							'_id' => 3,
-							'impressions' => 100,
-							'likes' => 10,
-							'shares' => 10,
-							'comments' => 10,
-							'created_on' => "2013-02-03T05:09:10+0000",
+						'games' => array(
+							array(
+								'_id' => 1,
+								'start_time' => '07:30 PM ET',
+								'start_date' => '20121015',
+							),
 						),
 					),
 				),
@@ -383,6 +454,7 @@
 			$test = self::buildTest($test);			
 		}
 		
+/*
 		public function testAggregate() {
 			$test = array(
 				'entry_point' => 'collection',
@@ -428,6 +500,17 @@
 				),
 			);
 			$test = self::buildTest($test);			
+		}
+*/
+		
+		public function testThreePosts() {
+			
+			$test = array(
+				'entry_point' => 'aggregate',
+				'configuration' => 'three_posts',
+			);
+			
+			self::buildTest($test);			
 		}
 				
 		public function testLimitAndSort() {
